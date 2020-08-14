@@ -3,12 +3,19 @@
 }
 
 @using System.Security.Claims
+@using PierreSweets.Models;
+@model IEnumerable<PierreSweets.Models.Treat>;
+
 
 <h2>Authentication with Identity</h2>
 <hr />
 @if (User.Identity.IsAuthenticated)
 {
     <p>Hello @User.Identity.Name!</p>
+
+    <p>@Html.ActionLink("Add new treat", "Create", "Treats")</p>
+    <p>@Html.ActionLink("Add new flavor", "Create", "Flavors")</p>
+
     @using (Html.BeginForm("LogOff", "Account"))
     {
         <input type="submit" class="btn btn-default" value="Log out" />
@@ -16,6 +23,20 @@
 }
 else
 {
+    @* @if (Model.Any())
+    {
+      <ul>
+      @foreach (Treat treat in Model)
+      {
+        <li>@Html.ActionLink($"{treat.Name}", "Details", new { id = treat.TreatId })</li>
+      }
+      </ul>
+    }
+    else
+    {
+      <h3>We haven't made any treats for today, yet!</h3>
+    } *@
+    
     <p>@Html.ActionLink("Register", "Register")</p>
     <p>@Html.ActionLink("Log in", "Login")</p>
 }

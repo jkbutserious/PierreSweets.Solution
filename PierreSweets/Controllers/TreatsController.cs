@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
-
-//new using directives
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
@@ -16,7 +14,7 @@ namespace PierreSweets.Controllers
   public class TreatsController : Controller
   {
     private readonly PierreSweetsContext _db;
-    private readonly UserManager<ApplicationUser> _userManager; //new line
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public TreatsController(UserManager<ApplicationUser> userManager, PierreSweetsContext db)
     {
@@ -26,12 +24,11 @@ namespace PierreSweets.Controllers
 
     public async Task<ActionResult> Index()
     {
-      var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-      var currentUser = await _userManager.FindByIdAsync(userId);
-      var userTreats = _db.Treats.Where(entry => entry.User.Id == currentUser.Id);
-      return View(userTreats);
+      List<Treat> model = _db.Treats.ToList();
+      return View(model);
     }
 
+    [Authorize]
     public ActionResult Create()
     {
       ViewBag.FlavorId = new SelectList(_db.Flavors, "FlavorId", "Name");
@@ -62,6 +59,7 @@ namespace PierreSweets.Controllers
       return View(thisTreat);
     }
 
+    [Authorize]
     public ActionResult Edit(int id)
     {
       var thisTreat = _db.Treats.FirstOrDefault(treats => treats.TreatId == id);
@@ -69,7 +67,7 @@ namespace PierreSweets.Controllers
       return View(thisTreat);
     }
 
-    [HttpPost]
+    [HttpPost, Authorize]
     public ActionResult Edit(Treat treat, int FlavorId)
     {
       if (FlavorId != 0)
@@ -81,6 +79,7 @@ namespace PierreSweets.Controllers
       return RedirectToAction("Index");
     }
 
+    [Authorize]
     public ActionResult AddFlavor(int id)
     {
       var thisTreat = _db.Treats.FirstOrDefault(treats => treats.TreatId == id);
@@ -88,7 +87,7 @@ namespace PierreSweets.Controllers
       return View(thisTreat);
     }
 
-    [HttpPost]
+    [HttpPost, Authorize]
     public ActionResult AddFlavor(Treat treat, int FlavorId)
     {
       if (FlavorId != 0)
@@ -99,6 +98,7 @@ namespace PierreSweets.Controllers
       return RedirectToAction("Index");
     }
 
+    [Authorize, Authorize]
     public ActionResult Delete(int id)
     {
       var thisTreat = _db.Treats.FirstOrDefault(treats => treats.TreatId == id);
@@ -114,7 +114,7 @@ namespace PierreSweets.Controllers
       return RedirectToAction("Index");
     }
 
-    [HttpPost]
+    [HttpPost, Authorize]
     public ActionResult DeleteFlavor(int joinId)
     {
       var joinEntry = _db.FlavorTreat.FirstOrDefault(entry => entry.FlavorTreatId == joinId);
