@@ -13,6 +13,6 @@ namespace PierreSweets.Models
         public string Name { get; set; }
         public virtual ApplicationUser User { get; set; }
 
-        public ICollection<CategoryItem> Flavors { get;}
+        public ICollection<FlavorTreat > Flavors { get;}
     }
 }
