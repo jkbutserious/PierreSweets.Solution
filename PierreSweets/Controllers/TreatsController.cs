@@ -39,7 +39,7 @@ namespace PierreSweets.Controllers
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create(Treat treat, int CategoryId)
+    public async Task<ActionResult> Create(Treat treat, int FlavorId)
     {
       var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
       var currentUser = await _userManager.FindByIdAsync(userId);
@@ -58,8 +58,29 @@ namespace PierreSweets.Controllers
       var thisTreat = _db.Treats
           .Include(treat => treat.Flavors)
           .ThenInclude(join => join.Flavor)
-          .FirstOrDefault(item => treat.TreatId == id);
+          .FirstOrDefault(treat => treat.TreatId == id);
       return View(thisTreat);
     }
+
+    public ActionResult Edit(int id)
+    {
+      var thisTreat = _db.Treats.FirstOrDefault(treats => treats.TreatId == id);
+      ViewBag.FlavorId = new SelectList(_db.Flavors, "FlavorId", "Name");
+      return View(thisTreat);
+    }
+
+    [HttpPost]
+    public ActionResult Edit(Treat treat, int FlavorId)
+    {
+      if (FlavorId != 0)
+      {
+        _db.FlavorTreat.Add(new FlavorTreat() { FlavorId = FlavorId, TreatId = treat.TreatId });
+      }
+      _db.Entry(treat).State = EntityState.Modified;
+      _db.SaveChanges();
+      return RedirectToAction("Index");
+    }
+
+    
   }
 }
