@@ -23,5 +23,13 @@ namespace PierreSweets.Controllers
       _userManager = userManager;
       _db = db;
     }
+
+     public async Task<ActionResult> Index()
+    {
+      var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      var currentUser = await _userManager.FindByIdAsync(userId);
+      var userTreats = _db.Treats.Where(entry => entry.User.Id == currentUser.Id);
+      return View(userTreats);
+    }
   }
 }
